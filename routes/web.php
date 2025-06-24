@@ -2,6 +2,9 @@
 
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Crypt;
 
 Route::get('/', function () {
     return view('welcome');
@@ -18,3 +21,28 @@ Route::middleware('auth')->group(function () {
 });
 
 require __DIR__.'/auth.php';
+
+Route::post('/login', function (Request $request) {
+    $request->validate([
+        'email' => 'required|email',
+        'password' => 'required',
+    ]);
+
+    if (Auth::attempt($request->only('email', 'password'))) {
+        $user = Auth::user();
+
+        $payload = [
+            'id' => $user->id,
+            'email' => $user->email,
+            'expires_at' => now()->addMinutes(5)->timestamp,
+        ];
+
+        $token = Crypt::encryptString(json_encode($payload));
+
+        return redirect("http://foodpanda-app.test/sso-login?token=$token");
+    }
+
+    return back()->withErrors([
+        'email' => 'Invalid credentials',
+    ]);
+});
