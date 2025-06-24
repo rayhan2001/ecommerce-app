@@ -46,3 +46,12 @@ Route::post('/login', function (Request $request) {
         'email' => 'Invalid credentials',
     ]);
 });
+
+Route::post('/logout', function (Request $request) {
+    Auth::logout();
+
+    $request->session()->invalidate();
+    $request->session()->regenerateToken();
+
+    return redirect('http://foodpanda-app.test/sso-logout');
+})->name('logout');
