@@ -26,3 +26,23 @@ cp .env.example .env
 php artisan key:generate
 php artisan migrate
 npm install && npm run dev
+
+🔐 Authentication Flow
+
+User logs in via /login
+A signed encrypted token is generated
+User is redirected to http://foodpanda-app.test/sso-login?token=...
+Token is verified in foodpanda-app, and user is logged in
+
+🔓 Logout Flow
+
+User logs out from ecommerce-app
+They are redirected to foodpanda-app.test/sso-logout
+Logout happens in both apps
+
+✅ Requirements
+
+PHP 8.2+
+Laravel 12
+Node.js & NPM
+MySQL
